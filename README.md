@@ -23,15 +23,20 @@ Welcome to the **Interpreter Language** project! 🚀 This is a simple interpret
 ### Installation
 
 1. **Clone the repository**:
+``` bash
     git clone https://github.com/yourusername/interpreter-language.git
+```
 Navigate to the project directory:
 
+``` bash
 cd interpreter-language
+```
 Usage
 To use the interpreter, run the main script:
 
-
+``` bash
 python interpreter.py
+```
 You can enter mathematical expressions and string literals, and the interpreter will return the evaluated result. For example:
 
 
@@ -46,8 +51,9 @@ Error: Division by zero! Even the universe has its limits. 😅
 Running Tests
 To run the tests, use the following command:
 
-
+``` bash
 python -m unittest discover -s tests
+```
 
 # Contributing 🤝
 Contributions are welcome! If you have suggestions for improvements or new features, feel free to create an issue or submit a pull request. Just remember:
@@ -55,13 +61,19 @@ Contributions are welcome! If you have suggestions for improvements or new featu
 Fork the repository.
 Create a new branch for your feature or bug fix:
 
+``` bash 
 git checkout -b feature/your-feature-name
+```
+
 Make your changes and commit them:
-
+``` bash
 git commit -m "Add a new feature"
-Push to the branch:
+``` 
 
+Push to the branch:
+``` bash
 git push origin feature/your-feature-name
+```
 Open a pull request.
 License
 This project is licensed under the MIT License - see the LICENSE file for details.
