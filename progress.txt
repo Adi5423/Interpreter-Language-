@@ -1,0 +1,57 @@
+A detailed summary of our progress on your interpreter project, including the key concepts, steps we took, and how we addressed various challenges along the way.
+
+Project Overview
+Project Name: Interpreter Language
+Purpose: To create a simple interpreter that can evaluate basic mathematical expressions and handle string literals. The interpreter should tokenize input, parse it into an Abstract Syntax Tree (AST), and then evaluate the AST to produce output.
+
+Key Concepts
+Lexer:
+
+The lexer (or lexical analyzer) is responsible for breaking down the input text into tokens. Tokens are categorized strings that represent various elements of the language (e.g., numbers, operators, parentheses).
+Each token is typically represented as a tuple containing a type and a value (e.g., ('NUMBER', 2)).
+Parser:
+
+The parser takes the list of tokens produced by the lexer and organizes them into a structured format, usually an Abstract Syntax Tree (AST). The AST represents the grammatical structure of the input.
+The parser checks for syntax errors and ensures that the tokens follow the rules of the language.
+Interpreter:
+
+The interpreter evaluates the AST and produces a result. It traverses the tree and performs the corresponding operations based on the node types (e.g., addition, subtraction).
+AST (Abstract Syntax Tree):
+
+The AST is a tree representation of the parsed input. Each node in the tree represents an operation or value. The structure of the tree reflects the order of operations and the hierarchy of expressions.
+Steps Taken
+Initial Setup:
+
+We began by defining the basic structure of the interpreter, including the lexer, parser, and interpreter classes. The lexer was set up to tokenize input strings into recognizable tokens.
+Tokenization:
+
+We implemented the tokenization process, which converts input strings into tokens. This involved defining various token types (e.g., numbers, operators, parentheses) and writing logic to identify them in the input.
+Parsing:
+
+We created the parser to take the list of tokens and build the AST. The parser checks for valid expressions and constructs the tree based on the order of operations (precedence).
+Evaluation:
+
+We implemented the interpreter to traverse the AST and compute the result of the expressions. This involved defining how to evaluate different types of nodes (e.g., binary operations).
+Error Handling:
+
+During our development, we encountered errors, particularly when trying to handle multiple lines of input. We identified that the parser was expecting a single expression rather than a sequence of expressions.
+We discussed potential solutions, including modifying the parser to handle multiple expressions or evaluating each line separately.
+Testing:
+
+We tested the interpreter with various inputs to ensure that it correctly tokenized, parsed, and evaluated the expressions. We observed the outputs and made adjustments as necessary.
+Challenges and Solutions
+Multiple Line Input Error:
+
+When attempting to process multiple lines of input, the lexer generated a combined list of tokens, which caused the parser to throw an error. We considered solutions but decided to simplify the implementation to handle one line at a time for now.
+Debugging:
+
+Throughout the process, we added debugging statements to print tokens and ASTs, which helped us understand how the input was being processed and identify issues.
+Conclusion and Next Steps
+Today, we made significant progress in building a basic interpreter capable of handling simple mathematical expressions and string literals. We established a clear flow from input to output, covering the key components of lexing, parsing, and interpreting.
+
+In the future, we can focus on:
+
+Fixing the multi-line input handling.
+Adding more features, such as additional mathematical functions or error handling for invalid expressions.
+Exploring optimizations for the lexer and parser.
+Thank you for your engagement and collaboration throughout this process! If you have any more questions or need further assistance in the future, feel free to ask. Good luck with your continued development!

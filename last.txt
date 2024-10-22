@@ -1,0 +1,246 @@
+To perform maths and strings with output.
+
+1= main.py -> 
+# Entry point of your interpreter
+
+from lexer import Lexer
+from parser import Parser
+from interpreter import Interpreter
+
+def main():
+    print("Enter your code (type 'END' on a new line to finish):")
+    lines = []
+    while True:
+        line = input()
+        if line.strip() == "END":
+            break
+        lines.append(line)
+    
+    # Join the lines into a single string
+    text = "\n".join(lines)
+    
+    lexer = Lexer(text)
+    tokens = lexer.tokenize()
+    print("Tokens:", tokens)  # Debugging line
+    parser = Parser(tokens)
+    ast = parser.parse()
+    print("AST:", ast)  # Debugging line
+    interpreter = Interpreter(ast)
+    result = interpreter.interpret()
+    print("Output:", result)  # Print the output from the interpreter
+
+if __name__ == '__main__':
+    main()
+
+2 = lexer.py
+# Lexer implementation  The lexer will convert the input source code into tokens
+import re
+
+# Define token types
+TOKEN_TYPES = [
+    ('NUMBER', r'\d+'),          # Integer
+    ('STRING', r'"([^"\\]*(\\.[^"\\]*)*)?"'),  # String literal
+    ('PLUS', r'\+'),             # Addition
+    ('MINUS', r'-'),             # Subtraction
+    ('TIMES', r'\*'),            # Multiplication
+    ('DIVIDE', r'/'),            # Division
+    ('IF', r'if'),               # If keyword
+    ('ELSE', r'else'),           # Else keyword
+    ('LPAREN', r'\('),           # Left Parenthesis
+    ('RPAREN', r'\)'),           # Right Parenthesis
+    ('NEWLINE', r'\n'),          # New line
+    ('SKIP', r'[ \t]+'),         # Skip spaces and tabs
+]
+
+# Create a regex pattern for all token types
+TOKEN_REGEX = '|'.join(f'(?P<{name}>{pattern})' for name, pattern in TOKEN_TYPES)
+
+class Lexer:
+    def __init__(self, text):
+        self.text = text
+        self.pos = 0
+        self.current_char = self.text[self.pos]
+
+    def error(self):
+        raise Exception('Invalid character')
+
+    def advance(self):
+        """Advance the pos pointer and set current_char."""
+        self.pos += 1
+        if self.pos > len(self.text) - 1:
+            self.current_char = None
+        else:
+            self.current_char = self.text[self.pos]
+
+    def skip_whitespace(self):
+        while self.current_char is not None and self.current_char.isspace():
+            self.advance()
+
+    def tokenize(self):
+        tokens = []
+        while self.pos < len(self.text):
+            match = re.match(TOKEN_REGEX, self.text[self.pos:])
+            if match:
+                token_type = match.lastgroup
+                token_value = match.group(token_type)
+                if token_type == 'NUMBER':
+                    tokens.append(('NUMBER', int(token_value)))
+                elif token_type == 'STRING':
+                    tokens.append(('STRING', token_value[1:-1]))  # Remove quotes
+                elif token_type != 'SKIP' and token_type != 'NEWLINE':
+                    tokens.append((token_type, token_value))
+                self.pos += len(token_value)
+            else:
+                self.error()
+        return tokens
+
+# # Example usage:
+# if __name__ == "__main__":
+#     lexer = Lexer('2 + 3 * (4 - 5)')
+#     tokens = lexer.tokenize()
+#     print(tokens)  # Should print a list of tokens
+
+3 = parser.py
+# parser.py
+# Parser implementation
+# The parser will take the tokens produced by the lexer and build an Abstract Syntax Tree (AST).
+
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.current_token = self.tokens[0] if tokens else None
+        self.position = 0
+
+    def error(self, message='Invalid syntax'):
+        raise Exception(message)
+
+    def advance(self):
+        """Advance the position pointer and set current_token."""
+        self.position += 1
+        if self.position < len(self.tokens):
+            self.current_token = self.tokens[self.position]
+        else:
+            self.current_token = None  # Set to None when out of tokens
+
+    def parse(self):
+        """Parse the tokens into an AST."""
+        if not self.tokens:
+            return None  # No tokens to parse
+        result = self.expr()  # Start parsing with an expression
+        self.check_for_unexpected_tokens()  # Check for any unexpected tokens
+        return result
+
+    def check_for_unexpected_tokens(self):
+        """Raise an error if there are unexpected tokens left."""
+        if self.current_token is not None:
+            self.error(f"Unexpected token: {self.current_token}")
+
+    def expr(self):
+        """Parse expressions (numbers, strings, and binary operations)."""
+        # print("Entering expr() with current_token:", self.current_token)  # Debugging line
+        left = self.term()
+
+        while self.current_token is not None and self.current_token[0] in ('PLUS', 'MINUS'):
+            op = self.current_token
+            self.advance()  # Move past operator
+            right = self.term()
+            left = ('BINOP', op[0], left, right)  # Create binary operation node
+
+        return left
+
+    def term(self):
+        """Parse terms (numbers, strings, and binary operations)."""
+        # print("Entering term() with current_token:", self.current_token)  # Debugging line
+        left = self.factor()
+
+        while self.current_token is not None and self.current_token[0] in ('TIMES', 'DIVIDE'):
+            op = self.current_token
+            self.advance()  # Move past operator
+            right = self.factor()
+            left = ('BINOP', op[0], left, right)  # Create binary operation node
+
+        return left
+
+    def factor(self):
+        """Parse factors (numbers, strings, and parentheses)."""
+        # print("Entering factor() with current_token:", self.current_token)  # Debugging line
+        if self.current_token is None:
+            return None  # Return None if there are no tokens
+
+        token_type, value = self.current_token
+        if token_type == 'NUMBER':
+            self.advance()  # Move past the number
+            return ('NUMBER', value)
+        elif token_type == 'STRING':
+            self.advance()  # Move past the string
+            return ('STRING', value)  # Return the string node
+        elif token_type == 'LPAREN':
+            self.advance()  # Skip '('
+            node = self.expr()
+            if self.current_token is None or self.current_token[0] != 'RPAREN':
+                self.error("Missing closing parenthesis")  # Missing closing parenthesis
+            self.advance()  # Skip ')'
+            return node
+        self.error(f"Unexpected token in factor: {self.current_token}")  # Raise an error for unexpected token
+
+4 = interpreter.py
+# interpreter.py
+# Interpreter implementation. The interpreter will execute the AST produced by the parser.
+
+class Interpreter:
+    def __init__(self, ast, debug=False):
+        self.ast = ast  # Store the AST directly
+        self.debug = debug  # Debug mode toggle
+
+    def interpret(self):
+        """Interpret the parsed AST."""
+        if self.ast is None:
+            self.error("No AST produced from parsing")  # Handle empty AST case
+        result = self._interpret(self.ast)
+        return result  # Return the result instead of printing it
+    
+    def _interpret(self, node):
+        """Evaluate the AST node."""
+        if node is None:
+            self.error("Attempted to interpret a None node")  # Handle None node
+        return self.eval(node)  # Call eval to interpret the AST
+
+    def eval(self, node):
+        """Evaluate an expression or statement."""
+        if self.debug:
+            print("Evaluating:", node)  # Debugging line
+
+        if node[0] == 'NUMBER':
+            return node[1]
+        elif node[0] == 'STRING':
+            return node[1]  # Return the string value directly
+        elif node[0] == 'BINOP':
+            op = node[1]
+            left = self.eval(node[2])
+            right = self.eval(node[3])
+            return self.apply_operator(op, left, right)
+        else:
+            self.error(f"Unexpected node type: {node[0]}")
+
+    def apply_operator(self, op, left, right):
+        """Apply the operator to the left and right operands."""
+        if op == 'PLUS':
+            return left + right
+        elif op == 'MINUS':
+            return left - right
+        elif op == 'TIMES':
+            return left * right
+        elif op == 'DIVIDE':
+            if right == 0:
+                self.error("Division by zero")
+            return left / right
+        elif op == 'POWER':
+            return left ** right  # Support for exponentiation
+        elif op == 'MOD':
+            return left % right  # Support for modulus
+        else:
+            self.error(f"Invalid operation: {op}")
+
+    def error(self, message):
+        """Raise an error with a specific message."""
+        raise Exception(f'Runtime error: {message}')

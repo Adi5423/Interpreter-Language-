@@ -1,0 +1,3 @@
+Books:
+    "Crafting Interpreters" by Robert Nystrom (available online for free) is an excellent resource that provides a hands-on approach to building interpreters.
+    "Programming Language Pragmatics" by Michael L. Scott provides a comprehensive overview of language design and implementation.

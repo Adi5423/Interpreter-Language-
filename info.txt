@@ -1,0 +1,20 @@
+1 = Implement the Lexer
+    Lexical Analysis: The lexer breaks the input source code into tokens. Each token represents a basic element of your language (keywords, identifiers, literals, operators, etc.).
+    Example Tokens: NUM for numbers, STRING for strings, PLUS for +, IF for the if keyword.
+    Implementation: Write a function that reads the input code and produces a list of tokens.
+    Recommendation: Start with a simple tokenizer that can handle numbers and basic operators.
+    Goal: Break the input (source code) into tokens (like INT, STRING, IDENTIFIER, ASSIGN, etc.).
+
+
+2 = Implement the Parser   
+    Parsing: The parser takes the list of tokens produced by the lexer and constructs an Abstract Syntax Tree (AST) that represents the structure of the code.
+    Grammar Rules: Define rules for how tokens combine to form valid statements.
+    Implementation: Write functions that recursively build the AST from the token list.
+    Recommendation: Start with simple expressions and statements, gradually adding complexity as you go.
+
+3 = Implement the Interpreter
+    Execution: The interpreter walks through the AST and executes the code. It evaluates expressions and executes statements.
+    Basic Operations: Implement basic arithmetic operations and string manipulations.
+    Control Flow: Add support for if-else statements.
+    Recommendation: Start with a simple evaluation function that can handle basic expressions before moving to control flow.
+
